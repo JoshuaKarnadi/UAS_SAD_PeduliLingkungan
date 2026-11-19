@@ -1,5 +1,4 @@
 <?php
-// helpers/logger.php
 
 function catat_log(PDO $pdo, ?int $user_id, string $action, string $description = '', ?string $ip = null): void
 {

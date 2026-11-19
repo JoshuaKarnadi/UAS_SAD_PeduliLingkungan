@@ -1,5 +1,4 @@
 <?php
-// includes/header.php
 
 require_once __DIR__ . '/../config/session.php';
 mulai_sesi_aman();

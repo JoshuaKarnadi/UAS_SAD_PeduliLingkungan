@@ -1,5 +1,4 @@
 <?php
-// actions/proses_register.php
 
 require_once __DIR__ . '/../config/session.php';
 mulai_sesi_aman();
@@ -20,7 +19,6 @@ function kembali_dengan_error(string $pesan, bool $hitung = true): void
     exit;
 }
 
-// 1. Cek CSRF
 $token_post = $_POST['csrf_token'] ?? '';
 $token_sesi = $_SESSION['csrf_token'] ?? '';
 if (!is_string($token_post) || $token_sesi === '' || !hash_equals($token_sesi, $token_post)) {
@@ -28,8 +26,7 @@ if (!is_string($token_post) || $token_sesi === '' || !hash_equals($token_sesi, $
     kembali_dengan_error('Permintaan tidak valid. Silakan coba lagi.', false);
 }
 
-// 1b. Rate limit per IP
-const BATAS_DAFTAR = 10;   // percobaan per 10 menit
+const BATAS_DAFTAR = 10;  
 $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 
 $stmt = $pdo->prepare(
@@ -52,7 +49,6 @@ if ((int) $stmt->fetchColumn() >= BATAS_DAFTAR) {
     );
 }
 
-// 2. Ambil input (harus berupa string biasa)
 $username   = $_POST['username'] ?? '';
 $email      = $_POST['email'] ?? '';
 $password   = $_POST['password'] ?? '';
@@ -65,7 +61,6 @@ if (!is_string($username) || !is_string($email)
 $username = trim($username);
 $email    = strtolower(trim($email));
 
-// 3. Validasi
 if (!preg_match('/\A[A-Za-z0-9_]{3,30}\z/', $username)) {
     kembali_dengan_error('Username 3-30 karakter: huruf, angka, atau garis bawah.');
 }
@@ -82,7 +77,6 @@ if ($password !== $konfirmasi) {
     kembali_dengan_error('Konfirmasi password tidak sama.');
 }
 
-// 4. Simpan
 $hash = password_hash($password, PASSWORD_DEFAULT);
 
 try {

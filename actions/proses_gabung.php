@@ -1,5 +1,5 @@
 <?php
-// actions/proses_gabung.php
+
 
 require_once __DIR__ . '/../includes/auth_check.php';
 
@@ -18,7 +18,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $user_id = (int) $_SESSION['user_id'];
 
-// 1. Cek CSRF
 $token_post = $_POST['csrf_token'] ?? '';
 $token_sesi = $_SESSION['csrf_token'] ?? '';
 if (!is_string($token_post) || $token_sesi === '' || !hash_equals($token_sesi, $token_post)) {
@@ -26,7 +25,6 @@ if (!is_string($token_post) || $token_sesi === '' || !hash_equals($token_sesi, $
     kembali('Permintaan tidak valid. Silakan coba lagi.');
 }
 
-// 2. Validasi ID laporan
 $laporan_id = filter_var(
     $_POST['laporan_id'] ?? '',
     FILTER_VALIDATE_INT,
@@ -39,7 +37,6 @@ if ($laporan_id === false) {
 $hari_ini    = (new DateTimeImmutable('today', new DateTimeZone('Asia/Jakarta')))->format('Y-m-d');
 $pesan_error = null;
 
-// 3. Transaksi: kunci baris laporan, cek aturan, lalu simpan
 try {
     $pdo->beginTransaction();
 
@@ -81,7 +78,6 @@ try {
     kembali('Terjadi kesalahan pada server.', $laporan_id);
 }
 
-// 4. Catat hasil (setelah transaksi selesai) lalu kembali
 if ($pesan_error !== null) {
     catat_log($pdo, $user_id, 'VOLUNTEER_JOIN_REJECTED', 'Laporan #' . $laporan_id . ': ' . $pesan_error);
     kembali($pesan_error, $laporan_id);

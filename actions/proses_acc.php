@@ -1,5 +1,4 @@
 <?php
-// actions/proses_acc.php
 
 require_once __DIR__ . '/../includes/auth_check.php';
 wajib_role('admin');
@@ -31,13 +30,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// Filter untuk kembali ke tampilan yang sama (daftar putih)
 $filter = $_POST['filter'] ?? 'all';
 if (!is_string($filter) || !in_array($filter, ['all', 'reported', 'gotong_royong', 'done'], true)) {
     $filter = 'all';
 }
 
-// 1. Cek CSRF
+
 $token_post = $_POST['csrf_token'] ?? '';
 $token_sesi = $_SESSION['csrf_token'] ?? '';
 if (!is_string($token_post) || $token_sesi === '' || !hash_equals($token_sesi, $token_post)) {
@@ -45,19 +43,19 @@ if (!is_string($token_post) || $token_sesi === '' || !hash_equals($token_sesi, $
     kembali('Permintaan tidak valid. Silakan coba lagi.', $filter);
 }
 
-// 2. Aksi dan ID laporan
+
 $aksi = $_POST['aksi'] ?? '';
 if (!is_string($aksi) || !in_array($aksi, ['setujui', 'tolak', 'selesai', 'ubah', 'ubah_volunteer', 'hapus', 'unblock_ip'], true)) {
     kembali('Aksi tidak dikenal.', $filter);
 }
 
-// Aksi "unblock_ip": buka blokir rate limit (append-only, tidak menghapus log)
+
 if ($aksi === 'unblock_ip') {
     $ip = $_POST['ip'] ?? '';
     if (!is_string($ip) || filter_var($ip, FILTER_VALIDATE_IP) === false) {
         kembali('Alamat IP tidak valid.', $filter);
     }
-    $ip = inet_ntop(inet_pton($ip));   // bentuk baku, sama dengan REMOTE_ADDR
+    $ip = inet_ntop(inet_pton($ip));  
 
     catat_log($pdo, $admin_id, 'IP_UNBLOCKED', 'Blokir IP dibuka oleh admin', $ip);
     kembali('Blokir IP ' . $ip . ' dibuka.', $filter, true);
@@ -74,7 +72,7 @@ if ($laporan_id === false) {
 
 $zona = new DateTimeZone('Asia/Jakarta');
 
-// Aksi "ubah": edit isi laporan (judul, lokasi, deskripsi)
+
 if ($aksi === 'ubah') {
     $judul     = $_POST['judul'] ?? '';
     $lokasi    = $_POST['lokasi'] ?? '';
@@ -154,7 +152,7 @@ if ($aksi === 'ubah') {
     kembali('Perubahan disimpan.', $filter, true);
 }
 
-// Aksi "ubah_volunteer": edit data kegiatan yang sedang berjalan
+
 if ($aksi === 'ubah_volunteer') {
     $desk_vol    = $_POST['deskripsi_volunteer'] ?? '';
     $tanggal_raw = $_POST['tanggal_aksi'] ?? '';
@@ -206,14 +204,14 @@ if ($aksi === 'ubah_volunteer') {
         } elseif ($lama['status'] !== 'gotong_royong') {
             $pesan_error = 'Data kegiatan hanya dapat diubah saat berstatus Gotong Royong.';
         } else {
-            // Tanggal yang tidak diubah boleh tetap; tanggal baru harus wajar
+            
             if ($tanggal_raw !== $lama['tanggal_aksi']) {
                 $hari_ini = new DateTimeImmutable('today', $zona);
                 if ($tgl < $hari_ini || $tgl > $hari_ini->modify('+365 days')) {
                     $pesan_error = 'Tanggal aksi yang baru harus dari hari ini sampai 1 tahun ke depan.';
                 }
             }
-            // Kuota tidak boleh di bawah jumlah peserta
+            
             if ($pesan_error === null) {
                 $stmt = $pdo->prepare('SELECT COUNT(*) FROM laporan_participants WHERE laporan_id = ?');
                 $stmt->execute([$laporan_id]);
@@ -257,7 +255,6 @@ if ($aksi === 'ubah_volunteer') {
     kembali('Data kegiatan disimpan.', $filter, true);
 }
 
-// 3. Jalankan aksi (setiap UPDATE punya syarat status asal)
 try {
     if ($aksi === 'setujui') {
         $desk_raw    = $_POST['deskripsi_volunteer'] ?? '';
@@ -337,7 +334,7 @@ try {
         $log_aksi = 'LAPORAN_DELETED';
         $pesan_ok = 'Laporan dihapus (soft-delete).';
 
-    } else { // selesai
+    } else { 
     
     $stmt = $pdo->prepare(
     "UPDATE laporan
@@ -361,7 +358,6 @@ $pesan_ok = 'Laporan ditandai selesai.';
     kembali('Terjadi kesalahan pada server.', $filter);
 }
 
-// 4. Tidak ada baris berubah = perpindahan status tidak sah
 if ($stmt->rowCount() === 0) {
     catat_log($pdo, $admin_id, 'ADMIN_ACTION_REJECTED', 'Aksi ' . $aksi . ' pada laporan #' . $laporan_id . ' tidak sah');
     kembali('Aksi tidak dapat dilakukan: laporan tidak ditemukan atau statusnya sudah berubah.', $filter);

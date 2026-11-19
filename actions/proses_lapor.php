@@ -1,5 +1,4 @@
 <?php
-// actions/proses_lapor.php
 
 require_once __DIR__ . '/../includes/auth_check.php';
 require_once __DIR__ . '/../helpers/gambar.php';
@@ -30,7 +29,7 @@ if (empty($_POST) && isset($_SERVER['CONTENT_LENGTH']) && (int) $_SERVER['CONTEN
     kembali_dengan_error('Ukuran data yang dikirim terlalu besar. Gambar maksimal 2 MB.');
 }
 
-// 1. Cek CSRF
+
 $token_post = $_POST['csrf_token'] ?? '';
 $token_sesi = $_SESSION['csrf_token'] ?? '';
 if (!is_string($token_post) || $token_sesi === '' || !hash_equals($token_sesi, $token_post)) {
@@ -38,7 +37,7 @@ if (!is_string($token_post) || $token_sesi === '' || !hash_equals($token_sesi, $
     kembali_dengan_error('Permintaan tidak valid. Silakan coba lagi.');
 }
 
-// 2. Ambil input
+
 $judul     = $_POST['judul'] ?? '';
 $lokasi    = $_POST['lokasi'] ?? '';
 $deskripsi = $_POST['deskripsi'] ?? '';
@@ -75,7 +74,7 @@ $input = [
     'kuota'                => $kuota_raw,
 ];
 
-// 3. Validasi
+
 if (!teks_valid($judul) || !teks_valid($lokasi) || !teks_valid($deskripsi)) {
     kembali_dengan_error('Input mengandung karakter yang tidak valid.');
 }
@@ -95,7 +94,7 @@ if ($len_deskripsi < 10 || $len_deskripsi > 2000) {
     kembali_dengan_error('Deskripsi harus 10-2000 karakter.', $input);
 }
 
-// Validasi data gotong royong / volunteer (hanya jika diajukan)
+
 $deskripsi_volunteer = null;
 $tanggal_aksi        = null;
 $kuota               = null;
@@ -134,7 +133,7 @@ if ($ajukan) {
     $kuota        = $kuota_valid;
 }
 
-// 4. Batasi jumlah laporan per user (anti spam)
+
 $stmt = $pdo->prepare(
     "SELECT COUNT(*) FROM laporan
      WHERE user_id = ? AND created_at > NOW() - INTERVAL '1 hour'"
@@ -146,13 +145,12 @@ if ((int) $stmt->fetchColumn() >= BATAS_LAPOR_PER_JAM) {
     kembali_dengan_error('Anda sudah membuat banyak laporan. Coba lagi dalam satu jam.', $input);
 }
 
-// 4b. Proses gambar (opsional)
+
 [$pesan_gambar, $gambar_mime, $gambar_data] = proses_gambar($_FILES['gambar'] ?? null);
 if ($pesan_gambar !== null) {
     kembali_dengan_error($pesan_gambar . ' Silakan pilih ulang gambar Anda.', $input);
 }
 
-// 5. Simpan gambar ke folder, lalu laporan ke database
 $permintaan  = $ajukan ? 'menunggu' : 'tidak';
 $gambar_nama = null;
 if ($gambar_data !== null) {
@@ -176,7 +174,7 @@ try {
     ]);
     $laporan_id = (int) $stmt->fetchColumn();
 } catch (PDOException $e) {
-    hapus_berkas_gambar($gambar_nama);   // jangan meninggalkan berkas yatim
+    hapus_berkas_gambar($gambar_nama);   
     error_log('Simpan laporan gagal: ' . $e->getMessage());
     kembali_dengan_error('Terjadi kesalahan pada server.', $input);
 }

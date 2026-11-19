@@ -1,7 +1,3 @@
-/* ==========================================================
-   PeduliLingkungan - style.css (perombakan tampilan)
-   Hanya CSS. Nama class lama tetap dipakai, jadi HTML/PHP tidak berubah.
-   ========================================================== */
 
 :root {
     --bg: #f2f6f3;
@@ -44,7 +40,6 @@ hr { border: 0; border-top: 1px solid var(--border); margin: 1.25rem 0; }
 
 button, input, select, textarea { font: inherit; }
 
-/* ---------- Navbar ---------- */
 .navbar {
     position: sticky;
     top: 0;
@@ -79,7 +74,6 @@ button, input, select, textarea { font: inherit; }
 .navbar a + form { margin-left: auto; }
 .navbar .btn-danger { padding: .42rem .95rem; font-size: .85rem; margin: 0; }
 
-/* ---------- Wadah dan kartu ---------- */
 .container-utama {
     max-width: 1040px;
     margin: 28px auto 48px;
@@ -105,7 +99,6 @@ button, input, select, textarea { font: inherit; }
     border: 1px solid var(--border);
 }
 
-/* ---------- Tombol ---------- */
 .btn-primary, .btn-danger {
     display: inline-flex;
     align-items: center;
@@ -169,7 +162,6 @@ button, input, select, textarea { font: inherit; }
     color: #111827;
 }
 
-/* ---------- Formulir ---------- */
 .form-group { margin-bottom: 1.1rem; }
 .form-group label {
     display: block;
@@ -214,7 +206,6 @@ input[type="checkbox"] {
     accent-color: var(--primary);
 }
 
-/* ---------- Tabel ---------- */
 .table-data {
     width: 100%;
     border-collapse: collapse;
@@ -240,7 +231,6 @@ input[type="checkbox"] {
 .table-data tr:last-child td { border-bottom: 0; }
 .table-data tr:hover td { background: #f6faf7; }
 
-/* ---------- Pesan ---------- */
 .alert-error, .alert-success {
     padding: .8rem 1rem;
     margin-bottom: 1rem;
@@ -252,7 +242,6 @@ input[type="checkbox"] {
 .alert-error   { background: #fdecea; color: #8a1f17; border-color: #f2b8b2; }
 .alert-success { background: #e5f5ea; color: #1b5a2f; border-color: #a9dbb9; }
 
-/* ---------- Lencana status ---------- */
 .badge-status {
     display: inline-block;
     padding: .2rem .75rem;
@@ -268,7 +257,6 @@ input[type="checkbox"] {
 .badge-status[data-status="gotong_royong"] { background: #d8ecff; color: #0b4f8a; }
 .badge-status[data-status="done"]          { background: #d5f0dd; color: #1c5a30; }
 
-/* ---------- Bilah filter (opsional, aktif jika HTML memakai class ini) ---------- */
 .filter-bar {
     display: flex;
     flex-wrap: wrap;
@@ -296,7 +284,6 @@ input[type="checkbox"] {
 }
 .filter-bar a.btn-primary:hover { background: var(--primary-dark); color: #fff; }
 
-/* ---------- Area admin (tampilan berbeda) ---------- */
 .halaman-admin { background: #eceef6; }
 .halaman-admin .navbar { background: linear-gradient(135deg, #25274d, #3b3f78); }
 .halaman-admin .card-box { border-left: 5px solid #3b3f78; }
@@ -321,7 +308,6 @@ input[type="checkbox"] {
     text-transform: uppercase;
 }
 
-/* ---------- Layar kecil ---------- */
 @media (max-width: 640px) {
     .navbar { padding: 8px 12px; }
     .container-utama { margin-top: 16px; padding: 0 12px; }
@@ -330,7 +316,6 @@ input[type="checkbox"] {
     h2 { font-size: 1.3rem; }
 }
 
-/* ---------- Hormati preferensi gerakan minimal ---------- */
 @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; }
     .btn-primary:hover, .btn-danger:hover { transform: none; }

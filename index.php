@@ -1,5 +1,4 @@
 <?php
-// index.php
 
 require_once __DIR__ . '/config/session.php';
 mulai_sesi_aman();
@@ -10,7 +9,6 @@ $flash_success = $_SESSION['flash_success'] ?? '';
 $flash_error   = $_SESSION['flash_error'] ?? '';
 unset($_SESSION['flash_success'], $_SESSION['flash_error']);
 
-// Filter: hanya nilai dari daftar putih
 $filter_boleh = ['all', 'reported', 'gotong_royong'];
 $filter = $_GET['filter'] ?? 'all';
 if (!is_string($filter) || !in_array($filter, $filter_boleh, true)) {
@@ -28,7 +26,6 @@ $label_status = [
     'done'          => 'Selesai',
 ];
 
-// Sorotan: kegiatan volunteer terdekat (hanya di filter "Semua")
 $sorotan = [];
 if ($filter === 'all') {
     $stmt = $pdo->prepare(
@@ -43,7 +40,6 @@ if ($filter === 'all') {
     $sorotan = $stmt->fetchAll();
 }
 
-// Daftar laporan (50 terbaru)
 $stmt = $pdo->prepare(
     "SELECT l.id, l.judul, l.lokasi, l.status, l.permintaan_volunteer, l.tanggal_aksi, l.kuota, l.created_at,
             u.username,

@@ -1,5 +1,4 @@
 <?php
-// config/database.php
 
 $env_path = dirname(__DIR__, 2) . '/.env';
 

@@ -1,5 +1,4 @@
 <?php
-// admin_detail.php
 
 require_once __DIR__ . '/includes/auth_check.php';
 wajib_role('admin');

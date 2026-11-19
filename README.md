@@ -123,3 +123,14 @@ Pilih salah satu mode berikut (wajib memakai `router.php` agar pemblokiran berka
   ```
 
   Cek IPv4 PC Anda lewat `ipconfig` (misalnya `192.168.1.10`), lalu akses lewat peramban HP: **`http://192.168.1.10:8000`**
+
+  ### 8. Akun Pengujian Admin
+Jika berkas `.sql` yang diimpor sudah menyertakan data awal (*seeder*), Anda dapat langsung masuk sebagai **Admin** menggunakan kredensial berikut:
+* **Email:** `tes@gmail.com`
+* **Password:** `qwerty123`
+
+**Jika akun di atas belum tersedia di basis data:**
+1. Lakukan registrasi akun baru terlebih dahulu melalui halaman **Register** di aplikasi (misalnya menggunakan email `tes@gmail.com`).
+2. Buka **pgAdmin 4** atau `psql` (menggunakan akun superuser `postgres`), lalu ubah peran pengguna tersebut menjadi `admin` pada tabel `users`:
+   ```sql
+   UPDATE users SET role = 'admin' WHERE email = 'tes@gmail.com';

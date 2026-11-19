@@ -1,10 +1,7 @@
 <?php
-// router.php - Pelindung akses file tersembunyi & header aset statis untuk php -S
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '/';
 
-// 1. Blokir akses ke file/folder berawalan titik (.git, .env, .gitignore, .htaccess)
-//    serta folder sensitif (config, includes)
 if (
     preg_match('#(^|/)\.#', $uri) ||
     preg_match('#^/(config|includes)(/|$)#i', $uri)
@@ -15,14 +12,12 @@ if (
     exit;
 }
 
-// 2. Pasang header keamanan dasar
 header_remove('X-Powered-By');
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: SAMEORIGIN');
 
 $filePath = __DIR__ . $uri;
 
-// 3. Jika file adalah aset statis non-PHP (CSS, gambar, dll.), kirim manual agar header nosniff terbawa
 if ($uri !== '/' && is_file($filePath) && pathinfo($filePath, PATHINFO_EXTENSION) !== 'php') {
     $mimeTypes = [
         'css'  => 'text/css; charset=UTF-8',
@@ -44,10 +39,8 @@ if ($uri !== '/' && is_file($filePath) && pathinfo($filePath, PATHINFO_EXTENSION
     exit;
 }
 
-// 4. Jika file .php ada di disk (misal /admin.php, /login.php), biarkan PHP mengeksekusinya
 if ($uri !== '/' && is_file($filePath)) {
     return false;
 }
 
-// 5. Default ke index.php
 require_once __DIR__ . '/index.php';

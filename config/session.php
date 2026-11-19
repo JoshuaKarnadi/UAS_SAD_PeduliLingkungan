@@ -1,5 +1,4 @@
 <?php
-// config/session.php
 
 function kirim_header_keamanan(): void
 {
@@ -39,7 +38,7 @@ function mulai_sesi_aman(): void
     session_start();
 }
 
-const BATAS_IDLE_DETIK = 900;   // 15 menit
+const BATAS_IDLE_DETIK = 900; 
 
 function sesi_idle_habis(): bool
 {

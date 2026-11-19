@@ -1,26 +1,22 @@
 <?php
-// helpers/gambar.php
 
 const FOLDER_UPLOAD    = __DIR__ . '/../assets/uploads/';
 const POLA_NAMA_GAMBAR = '/\A[a-f0-9]{32}\.(jpg|png)\z/';
 
-// Apakah ini nama berkas buatan server kita?
 function nama_gambar_valid(?string $nama): bool
 {
     return $nama !== null && preg_match(POLA_NAMA_GAMBAR, $nama) === 1;
 }
 
-// Alamat gambar untuk tag <img>, atau null jika tidak ada / tidak sah
 function url_gambar(?string $nama): ?string
 {
     return nama_gambar_valid($nama) ? 'assets/uploads/' . $nama : null;
 }
 
-// Memeriksa dan membuat ulang gambar. Mengembalikan [pesan_error|null, mime|null, data|null]
 function proses_gambar($berkas): array
 {
     if (!is_array($berkas) || ($berkas['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
-        return [null, null, null];   // gambar bersifat opsional
+        return [null, null, null];  
     }
     if ($berkas['error'] === UPLOAD_ERR_INI_SIZE || $berkas['error'] === UPLOAD_ERR_FORM_SIZE) {
         return ['Ukuran gambar maksimal 2 MB.', null, null];
@@ -38,7 +34,6 @@ function proses_gambar($berkas): array
         return ['Ukuran gambar maksimal 2 MB.', null, null];
     }
 
-    // Tipe asli dibaca dari ISI berkas, bukan dari nama atau tipe kiriman browser
     $finfo = new finfo(FILEINFO_MIME_TYPE);
     $mime  = $finfo->file($tmp);
     $boleh = ['image/jpeg' => IMAGETYPE_JPEG, 'image/png' => IMAGETYPE_PNG];
@@ -61,7 +56,6 @@ function proses_gambar($berkas): array
         return ['Gambar tidak dapat diproses.', null, null];
     }
 
-    // EXIF dibuang saat dibuat ulang, jadi putar dulu sesuai orientasi foto HP
     if ($mime === 'image/jpeg' && function_exists('exif_read_data')) {
         $exif  = @exif_read_data($tmp);
         $sudut = [3 => 180, 6 => -90, 8 => 90][(int) ($exif['Orientation'] ?? 1)] ?? 0;
@@ -73,7 +67,6 @@ function proses_gambar($berkas): array
         }
     }
 
-    // Perkecil jika lebih lebar dari 1600 piksel
     if (imagesx($img) > 1600) {
         $kecil = imagescale($img, 1600);
         if ($kecil !== false) {
@@ -81,7 +74,6 @@ function proses_gambar($berkas): array
         }
     }
 
-    // Buat ulang dari piksel: membuang metadata (EXIF/GPS) dan isi tersembunyi
     ob_start();
     if ($mime === 'image/png') {
         imagealphablending($img, false);
@@ -99,7 +91,6 @@ function proses_gambar($berkas): array
     return [null, $mime, $data];
 }
 
-// Menulis gambar ke folder dengan nama acak buatan server. Mengembalikan nama berkas atau null.
 function simpan_berkas_gambar(string $data, string $mime): ?string
 {
     $nama = bin2hex(random_bytes(16)) . '.' . ($mime === 'image/png' ? 'png' : 'jpg');
@@ -113,7 +104,6 @@ function simpan_berkas_gambar(string $data, string $mime): ?string
     return $nama;
 }
 
-// Menghapus berkas gambar. Nama diperiksa dulu agar tidak bisa keluar dari folder.
 function hapus_berkas_gambar(?string $nama): void
 {
     if (!nama_gambar_valid($nama)) {

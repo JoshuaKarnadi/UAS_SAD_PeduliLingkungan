@@ -1,5 +1,4 @@
 <?php
-// actions/logout.php
 
 require_once __DIR__ . '/../config/session.php';
 mulai_sesi_aman();
@@ -23,10 +22,8 @@ if (!is_string($token_post) || $token_sesi === '' || !hash_equals($token_sesi, $
 
 catat_log($pdo, (int) $_SESSION['user_id'], 'LOGOUT', 'Logout');
 
-// Bersihkan data sesi
 $_SESSION = [];
 
-// Hapus cookie sesi di browser
 if (ini_get('session.use_cookies')) {
     $p = session_get_cookie_params();
     setcookie(session_name(), '', [
@@ -39,10 +36,8 @@ if (ini_get('session.use_cookies')) {
     ]);
 }
 
-// Hancurkan sesi di server
 session_destroy();
 
-// Sesi baru yang bersih, hanya untuk pesan konfirmasi
 mulai_sesi_aman();
 $_SESSION['flash_success'] = 'Anda telah keluar.';
 

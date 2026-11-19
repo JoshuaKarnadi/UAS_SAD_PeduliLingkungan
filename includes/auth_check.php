@@ -1,5 +1,4 @@
 <?php
-// includes/auth_check.php
 
 require_once __DIR__ . '/../config/session.php';
 require_once __DIR__ . '/../config/database.php';
@@ -41,7 +40,6 @@ function wajib_role(string $role): void
     }
 }
 
-// --- Pemeriksaan utama (jalan otomatis saat file ini di-include) ---
 if (empty($_SESSION['user_id'])) {
     arahkan_ke_login();
 }

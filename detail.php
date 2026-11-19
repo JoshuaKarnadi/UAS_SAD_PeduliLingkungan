@@ -1,5 +1,4 @@
 <?php
-// detail.php
 
 require_once __DIR__ . '/config/session.php';
 mulai_sesi_aman();
@@ -11,11 +10,9 @@ $flash_success = $_SESSION['flash_success'] ?? '';
 $flash_error   = $_SESSION['flash_error'] ?? '';
 unset($_SESSION['flash_success'], $_SESSION['flash_error']);
 
-// Siapa yang melihat? (null = guest atau sesi habis)
 $uid      = (isset($_SESSION['user_id']) && !sesi_idle_habis()) ? (int) $_SESSION['user_id'] : null;
 $is_admin = ($uid !== null && ($_SESSION['role'] ?? '') === 'admin');
 
-// ID harus bilangan bulat dalam rentang yang wajar
 $id = filter_var(
     $_GET['id'] ?? '',
     FILTER_VALIDATE_INT,

@@ -1,5 +1,4 @@
 <?php
-// admin.php
 
 require_once __DIR__ . '/includes/auth_check.php';
 wajib_role('admin');
@@ -8,7 +7,6 @@ $flash_success = $_SESSION['flash_success'] ?? '';
 $flash_error   = $_SESSION['flash_error'] ?? '';
 unset($_SESSION['flash_success'], $_SESSION['flash_error']);
 
-// Filter: hanya nilai dari daftar putih
 $filter_boleh = ['all', 'reported', 'gotong_royong', 'done'];
 $filter = $_GET['filter'] ?? 'all';
 if (!is_string($filter) || !in_array($filter, $filter_boleh, true)) {
@@ -34,7 +32,6 @@ $label_permintaan = [
 ];
 
 
-// Jumlah pengajuan yang menunggu
 $stmt = $pdo->prepare(
     "SELECT COUNT(*) FROM laporan
      WHERE status = 'reported' AND permintaan_volunteer = 'menunggu' AND deleted_at IS NULL"
@@ -42,7 +39,6 @@ $stmt = $pdo->prepare(
 $stmt->execute();
 $jumlah_menunggu = (int) $stmt->fetchColumn();
 
-// Daftar laporan (pengajuan yang menunggu tampil paling atas)
 $stmt = $pdo->prepare(
     "SELECT l.id, l.judul, l.status, l.permintaan_volunteer, l.tanggal_aksi, l.kuota,
             l.created_at, u.username,
@@ -57,7 +53,6 @@ $stmt = $pdo->prepare(
 $stmt->execute([$filter, $filter]);
 $daftar = $stmt->fetchAll();
 
-// Audit log terbaru (50 baris)
 $stmt = $pdo->prepare(
     "SELECT a.created_at, a.action, a.description, a.ip_address, u.username
      FROM activity_logs a
@@ -68,7 +63,6 @@ $stmt = $pdo->prepare(
 $stmt->execute();
 $logs = $stmt->fetchAll();
 
-// IP yang sedang diblokir (aturan yang sama dengan login dan registrasi)
 $stmt = $pdo->prepare(
     "WITH unblock AS (
          SELECT ip_address, MAX(created_at) AS terakhir
